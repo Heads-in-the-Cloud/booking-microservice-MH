@@ -31,14 +31,14 @@ public class PassengerController {
 	}
 	
 	//Create
-	@PostMapping
+	@PostMapping("/add")
 	public ResponseEntity<Passenger> addPassenger(@RequestBody Passenger passenger) {
 		service.save(passenger);
 		return ResponseEntity.ok(passenger);
 	}
 	
 	//Read
-	@GetMapping
+	@GetMapping("/all")
 	public ResponseEntity<List<Passenger>> readAllPassengers() {
 		
 		List<Passenger> passengers = service.readAll();
@@ -55,18 +55,21 @@ public class PassengerController {
 	}
 	
 	//Update
-	@PutMapping("/{id}")
+	@PutMapping("/update/{id}")
 	public ResponseEntity<String> updatePassenger(@PathVariable int id, @RequestBody Passenger passenger) {
 		
+		//Check if path id = user id
 		if(id != passenger.getId()) {
 			throw new IdMismatchException();
 		}
+		//Check if the record to update exists
+		Passenger temp = service.readById(id).orElseThrow(IdNotFoundException::new);
 		service.save(passenger);
 		return ResponseEntity.ok("Passenger updated successfully");
 	}
 	
 	//Delete
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/delete{id}")
 	public ResponseEntity<Void> deletePassenger(@PathVariable int id) {
 		
 		service.delete(id);

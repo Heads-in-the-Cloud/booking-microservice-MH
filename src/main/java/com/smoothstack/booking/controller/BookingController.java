@@ -31,14 +31,14 @@ public class BookingController {
 	}
 	
 	//Create
-	@PostMapping
+	@PostMapping("/add")
 	public ResponseEntity<Booking> addBooking(@RequestBody Booking booking) {
 		service.save(booking);
 		return ResponseEntity.ok(booking);
 	}
 	
 	//Read
-	@GetMapping
+	@GetMapping("/all")
 	public ResponseEntity<List<Booking>> readAllBookings() {
 		
 		List<Booking> bookings = service.readAll();
@@ -55,18 +55,21 @@ public class BookingController {
 	}
 	
 	//Update
-	@PutMapping("/{id}")
+	@PutMapping("/update/{id}")
 	public ResponseEntity<String> updateBooking(@PathVariable int id, @RequestBody Booking booking) {
 		
+		//Check if path id = id
 		if(id != booking.getId()) {
 			throw new IdMismatchException();
 		}
+		//Check if the record to update exists
+		Booking temp = service.readById(id).orElseThrow(IdNotFoundException::new);
 		service.save(booking);
 		return ResponseEntity.ok("Booking updated successfully");
 	}
 	
 	//Delete
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Void> deleteBooking(@PathVariable int id) {
 		
 		service.delete(id);

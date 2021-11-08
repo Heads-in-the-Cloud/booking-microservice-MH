@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.smoothstack.booking.entity.FlightBookings;
+import com.smoothstack.booking.entity.Passenger;
 import com.smoothstack.booking.exception.IdMismatchException;
 import com.smoothstack.booking.exception.IdNotFoundException;
 import com.smoothstack.booking.service.FlightBookingsService;
@@ -31,14 +32,14 @@ public class FlightBookingsController {
 	}
 	
 	//Create
-	@PostMapping
+	@PostMapping("/add")
 	public ResponseEntity<FlightBookings> addFlightBookings(@RequestBody FlightBookings flightBookings) {
 		service.save(flightBookings);
 		return ResponseEntity.ok(flightBookings);
 	}
 	
 	//Read
-	@GetMapping
+	@GetMapping("/all")
 	public ResponseEntity<List<FlightBookings>> readAllFlightBookingss() {
 		
 		List<FlightBookings> flightBookings = service.readAll();
@@ -55,18 +56,21 @@ public class FlightBookingsController {
 	}
 	
 	//Update
-	@PutMapping("/{id}")
+	@PutMapping("/update/{id}")
 	public ResponseEntity<String> updateFlightBookings(@PathVariable int id, @RequestBody FlightBookings flightBookings) {
 		
+		//Check if path id = id
 		if(id != flightBookings.getBookingId()) {
 			throw new IdMismatchException();
 		}
+		//Check if the record to update exists
+		FlightBookings temp = service.readById(id).orElseThrow(IdNotFoundException::new);
 		service.save(flightBookings);
 		return ResponseEntity.ok("FlightBookings updated successfully");
 	}
 	
 	//Delete
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Void> deleteFlightBookings(@PathVariable int id) {
 		
 		service.delete(id);

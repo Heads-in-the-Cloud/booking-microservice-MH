@@ -31,14 +31,15 @@ public class BookingAgentController {
 	}
 	
 	//Create
-	@PostMapping
+	@PostMapping("/add")
 	public ResponseEntity<BookingAgent> addBookingAgent(@RequestBody BookingAgent bookingAgent) {
+		
 		service.save(bookingAgent);
 		return ResponseEntity.ok(bookingAgent);
 	}
 	
 	//Read
-	@GetMapping
+	@GetMapping("/all")
 	public ResponseEntity<List<BookingAgent>> readAllBookingAgents() {
 		
 		List<BookingAgent> bookingAgents = service.readAll();
@@ -55,18 +56,21 @@ public class BookingAgentController {
 	}
 	
 	//Update
-	@PutMapping("/{id}")
+	@PutMapping("/update/{id}")
 	public ResponseEntity<String> updateBookingAgent(@PathVariable int id, @RequestBody BookingAgent bookingAgent) {
 		
+		//Check if path id = id
 		if(id != bookingAgent.getUserId()) {
 			throw new IdMismatchException();
 		}
+		//Check if record to update exists
+		BookingAgent temp = service.readById(id).orElseThrow(IdNotFoundException::new);
 		service.save(bookingAgent);
 		return ResponseEntity.ok("BookingAgent updated successfully");
 	}
 	
 	//Delete
-	@DeleteMapping("/{id}")
+	@DeleteMapping("/delete/{id}")
 	public ResponseEntity<Void> deleteBookingAgent(@PathVariable int id) {
 		
 		service.delete(id);
